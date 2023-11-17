@@ -1,0 +1,90 @@
+<template>
+   <div class="card">
+      <div class="container">
+         <img src="/.png" alt="">
+         <div class="title-box">
+           <div class="title">
+             <div>每</div>
+             <div>日</div>
+             <div>推</div>
+             <div>荐</div>
+           </div>
+         </div>
+         <div class="button-box">
+            <button>
+                <svg-icon symbolId="icon-play" className="svgIcon"></svg-icon>
+            </button>
+         </div>
+      </div>
+   </div>
+</template>
+
+<script>
+import ButtonIcon from './ButtonIcon.vue'
+import SvgIcon from './SvgIcon.vue'
+export default {
+  components: { ButtonIcon, SvgIcon },
+    name: 'DailyRecSongCard'
+}
+</script>
+
+<style scoped>
+    .card { 
+        width: 80%;
+        /* border: 1px solid black; */
+        cursor: pointer;
+        z-index: 1;
+    }
+    .container {
+        border-radius: 16px;
+        display: flex;
+        position: relative;
+        overflow: hidden;
+    }
+    .container img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%; 
+        z-index: -1;
+        animation: move 38s infinite ;
+    }
+    .title-box {
+        flex-grow: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .title {
+        padding: 16px;
+        box-sizing: border-box;
+        width: 150px;
+        height: 150px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        place-items: center;
+    }
+    .title div{
+       font-size: 32px;
+       font-weight: 1000;
+    }
+    .button-box {
+        flex-grow: 2;
+        position: relative;
+    }
+    button {
+       position: absolute;
+       right: 16px;
+       bottom: 16px;
+       border: none;
+       background: transparent;
+    }
+    @keyframes move {
+     0% {
+        transform: translateY(0);
+     }
+     100% {
+        transform: translateY(-50%);
+     }
+}
+</style>
