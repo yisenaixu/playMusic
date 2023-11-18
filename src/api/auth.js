@@ -34,6 +34,7 @@ export function generateQrcodeKey() {
  * 生成二维码
  * @param {Object} params
  * @param {string} params.key
+ * @param {string} params.qrimg //任意数据都可以
  */
 export function generateQrcode(params) {
     return request({
