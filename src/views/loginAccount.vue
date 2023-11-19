@@ -171,7 +171,10 @@ export default {
         setCookies(res.cookie);
         this.$store.dispatch("fetchUserProfile")
           .then(() => {
-            this.$router.push({path: '/library'});
+            this.$store.dispatch('fetchLikedPlaylist')
+              .then(() => {
+                this.$router.push({path: '/library'}); 
+              })
           });
         console.log(this.$store.state.userData, "userData");
       }

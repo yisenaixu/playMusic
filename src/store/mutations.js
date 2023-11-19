@@ -16,5 +16,8 @@ export default {
             state.settings.enabledPlaylistCategories = state.settings.enabledPlaylistCategories.filter(c => c !== name)
         }
 
+    },
+    updateLikedXXX(state, {name, data}) {
+        state.liked[name] = data;
     }
 }

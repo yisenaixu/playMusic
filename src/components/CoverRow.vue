@@ -12,7 +12,7 @@ import Cover from './Cover.vue';
 export default {
   name: 'coverRow',
   components: {Cover},
-  props: ['items','type']
+  props: ['items','type'] //type: 'playlist' | 'album' | 'artist'
 }
 </script>
   

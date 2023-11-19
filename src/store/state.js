@@ -8,6 +8,19 @@ if (localStorage.getItem('appVersion') === null) {
   }
 
 export default {
-    userData: {},
+    liked: {
+      songsId: [],
+      songsDetails: [],
+      playlists: [],
+      albums: [],
+      mvs: [],
+      artists: [],
+      cloud: [],
+      playHistory: {
+        weekData: [],
+        allData: []
+      }
+    },
+    userData: JSON.parse(localStorage.getItem('userData')) ?? {},
     settings: JSON.parse(localStorage.getItem('settings'))
 }

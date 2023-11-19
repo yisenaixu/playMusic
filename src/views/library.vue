@@ -1,8 +1,8 @@
 <template>
   <div class="library">
     <h1>
-      <img class="avatar" src="" alt="" loading="lazy" />
-      {{}}的音乐库
+      <img class="avatar" :src="userData.user.avatarUrl" alt="" loading="lazy" />
+      {{userData.user.nickname}}的音乐库
     </h1>
     <div class="section-one">
       <div class="flex-wrap">
@@ -11,7 +11,8 @@
           <div class="bottom">
             <div class="text">
               我喜欢的音乐
-              <div class="subtext">?首歌</div>
+              {{ console.debug(liked.playlists) }}
+              <div class="subtext">{{ liked.playlists[0]?.trackCount }}首歌</div>
             </div>
             <div class="button">
               <button @click.stop="play" class="play-button">
@@ -24,7 +25,7 @@
           <TrackList
             type="tracklist"
             :columnNumber="4"
-            :songs="[{}, {}, {}, {}, {}]"
+            :songs="liked.songsDetails"
             :isShowTime="false"
           />
         </div>
@@ -32,48 +33,130 @@
     </div>
     <div class="section-two">
       <div class="tabs">
-        <div class="tab button">
-          创建的歌单 &nbsp;
+        <div class="tab button" :class="{active: currentTab === 'playlist'}" @click="currentTab = 'playlist'">
+          {{ playlistSelect[playlistType] }} &nbsp;
           <SvgIcon
             symbolId="icon-arrow-down"
             className="svgIcon"
             @click.stop="(e) => $refs.playlistTabMenu.openMenu(e)"
           />
         </div>
-        <div class="tab button">专辑</div>
-        <div class="tab button">艺人</div>
-        <div class="tab button">MV</div>
-        <div class="tab button">云盘</div>
-        <div class="tab button">听歌排行</div>
+        <div class="tab button" :class="{active: currentTab === 'album'}" @click="currentTab = 'album'">专辑</div>
+        <div class="tab button" :class="{active: currentTab === 'artist'}" @click="currentTab = 'artist'">艺人</div>
+        <div class="tab button" :class="{active: currentTab === 'mv'}" @click="currentTab = 'mv'">MV</div>
+        <div class="tab button" :class="{active: currentTab === 'cloud'}" @click="currentTab = 'cloud'">云盘</div>
+        <div class="tab button" :class="{active: currentTab === 'playHistory'}" @click="() => currentTab = 'playHistory'">听歌排行</div>
       </div>
     </div>
     <ContentMenu ref="playlistTabMenu">
-      <div class="item">全部歌单</div>
-      <div class="item">创建的歌单</div>
-      <div class="item">收藏的歌单</div>
+      <div class="item" @click="playlistType = 'all',currentTab = 'playlist'" >全部歌单</div>
+      <div class="item" @click="playlistType = 'mine',currentTab = 'playlist'">创建的歌单</div>
+      <div class="item" @click="playlistType = 'liked',currentTab = 'playlist'">收藏的歌单</div>
     </ContentMenu>
+    <div class="tab-content" v-show="currentTab === 'playlist'">
+      <CoverRow 
+       type="playlist"
+       :items="playlists"
+      />
+    </div>
+    <div class="tab-content" v-show="currentTab === 'playHistory'">
+      <TrackList
+        type="tracklist"
+        :songs="liked.playHistory['weekData']"
+      />
+    </div>
+    <div class="tab-content" v-show="currentTab === 'album'">
+      <CoverRow 
+       type="album"
+       :items="liked.albums"
+      />
+    </div>
+    <div class="tab-content" v-show="currentTab === 'artist'">
+      <CoverRow 
+       type="artist"
+       :items="liked.artists"
+      />
+    </div>
+    <div class="tab-content" v-show="currentTab === 'mv'">
+    </div>
+    <div class="tab-content" v-show="currentTab === 'cloud'">
+    </div>
   </div>
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex';
 import ContentMenu from "../components/ContentMenu.vue";
 import SvgIcon from "../components/SvgIcon.vue";
 import TrackList from "../components/TrackList.vue";
+import CoverRow from '../components/CoverRow.vue';
 export default {
   name: "library",
-  components: { TrackList, SvgIcon, ContentMenu },
+  components: { TrackList, SvgIcon, ContentMenu, CoverRow },
   data() {
     return {
-      currentTab: "",
+      playlistSelect: {
+        'mine': '创建的歌单',
+        'liked': '收藏的歌单',
+        'all': '全部歌单'
+      },
+      playlistType: 'mine', // 'mine' | 'liked' | 'all'
+      currentTab: "playlist",
     };
   },
-  methods: {},
+  computed: {
+    ...mapState(['liked','userData']),
+    playlists() {
+      if(this.playlistType === 'all') {
+        return this.liked.playlists
+      } else {
+        return this.filterPlaylists
+      }
+    },
+    filterPlaylists() {
+      //筛除我喜欢的歌单
+      const playlists = this.liked.playlists.slice(1);
+      // 用户uid
+      const userId = this.userData.user.userId;
+      if(this.playlistType === 'mine') {
+        this.liked.playlists.filter( item => item.creator.userId === userId)
+      } else if(this.playlistType === 'liked'){
+        this.liked.playlists.filter( item => item.creator.userId !== userId)
+      }
+      return playlists;
+    }
+  },
+  created() {
+    this.fetchPlayHistory();
+    this.fetchLikedSongsDetail();
+    this.fetchLikedPlaylist();
+    this.fetchLikedAlbums();
+    this.fetchLikedArtists();
+  },
+  methods: {
+    ...mapActions(['fetchPlayHistory',
+                   'fetchLikedSongsDetail',
+                   'fetchLikedPlaylist',
+                   'fetchLikedArtists',
+                   'fetchLikedAlbums'
+                    ]),
+  },
 };
 </script>
 <style lang="scss" scoped>
 .library {
   padding: 0 10vw;
   min-width: 1320px;
+  h1 {
+    display: flex;
+    align-items: center;
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      margin-right: 4px;
+    }
+  }
   .section-one {
     height: 280px;
     .flex-wrap {
@@ -131,6 +214,9 @@ export default {
       }
       .tracklist {
         flex: 7;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
     }
   }
@@ -160,7 +246,14 @@ export default {
           color: var(--color-primary);
         }
       }
+      .active {
+        background-color: var(--color-primary-bg);
+        color: var(--color-primary);
+      }
     }
   }
+  .tab-content {
+      min-height: 600px;
+    }
 }
 </style>

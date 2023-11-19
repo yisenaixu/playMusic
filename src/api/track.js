@@ -12,3 +12,16 @@ export function getAllTrack(params) {
     })
 }
 
+/**
+ * @description 调用此接口 , 传入音乐 id(支持多个 id, 用 , 隔开), 可获得歌曲详情
+ * @param {string} ids
+ */
+export function getTrackDetail(ids) {
+    return request({
+        url: '/song/detail',
+        method: 'get',
+        params: {
+            ids
+        }
+    })
+}

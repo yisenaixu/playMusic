@@ -91,6 +91,11 @@ import SvgIcon from './SvgIcon.vue';
      .songName {
     font-size: 22px;
     font-weight: 1000;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    
        .arName {
           font-size: 14px;
           font-weight: 300;
@@ -132,6 +137,7 @@ import SvgIcon from './SvgIcon.vue';
 }
 
 .tracklist {
+  padding: 10px;
   .left {
     img {
     width: 40px;

@@ -27,7 +27,7 @@ import TrackListItem from './TrackListItem.vue'
       },
       columnNumber: {
         type: Number,
-        default: 4
+        default: 1
       },
       isShowTime: {
         type: Boolean,
