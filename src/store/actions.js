@@ -1,5 +1,5 @@
 import { getSongListDetail } from "../api/playlist";
-import { getTrackDetail } from "../api/track";
+import { dailyTracks, getTrackDetail } from "../api/track";
 import { likedAlbums, likedArtists, userAccount, userLikeSongsIDs, userPlayHistory, userPlaylist } from "../api/user";
 import { isLoggedIn } from "../utils/auth"
 
@@ -137,5 +137,18 @@ export default {
                   })
                 }
                })
-    }                                                               
+    },
+    /**
+     * 获取日推歌曲
+     */           
+    fetchDailyTracks({ commit }) {
+      if(!isLoggedIn()) return ;
+      return dailyTracks()
+               .then(res => {
+                console.log(res);
+                if(res.data) {
+                  commit('updateDailyTracks',res.data.dailySongs)
+                }
+               })
+    }                                            
 }

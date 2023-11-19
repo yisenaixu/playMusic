@@ -19,5 +19,8 @@ export default {
     },
     updateLikedXXX(state, {name, data}) {
         state.liked[name] = data;
+    },
+    updateDailyTracks(state, dailyTracks) {
+        state.dailyTracks = dailyTracks;
     }
 }

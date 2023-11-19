@@ -1,5 +1,5 @@
 <template>
-   <div class="card">
+   <div class="card" @click="$router.push({path: '/dailyTracks'})">
       <div class="container">
          <img src="/.png" alt="">
          <div class="title-box">

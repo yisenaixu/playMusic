@@ -25,3 +25,13 @@ export function getTrackDetail(ids) {
         }
     })
 }
+
+/**
+ * @description 调用此接口 , 可获得每日推荐歌曲 ( 需要登录 )
+ */
+export function dailyTracks() {
+    return request({
+        url: '/recommend/songs',
+        method: 'get',
+    })
+}
