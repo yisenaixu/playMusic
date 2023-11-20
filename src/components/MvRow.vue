@@ -1,17 +1,17 @@
 <template>
-  <div class="mv-row">
+  <div class="mv-row" :style="listStyle">
     <div
       v-for="item in items"
       :key="item"
       class="cover"
       @mouseover="focus = true"
       @mouseleave="focus = false"
-      @click="goDetail"
+      @click="() => $router.push({path: `/mv/${item.id}`})"
     >
       <div class="container">
         <div class="img">
           <img
-            :src="item.imgurl"
+            :src="item.imgurl ?? item.cover"
             alt=""
             loading="lazy"
           />
@@ -21,8 +21,11 @@
         >
           {{ item.name }}
         </div>
-        <div class="time">
+        <div class="time" v-show="showTime">
             {{ item.publishTime }}
+        </div>
+        <div class="name" v-show="!showTime">
+            {{ item.artistName }}
         </div>
       </div>
     </div>
@@ -32,7 +35,32 @@
 <script>
 export default {
   name: "mvRow",
-  props: ["items", "type"], //type: 'playlist' | 'album' | 'artist'
+  data() {
+    return {
+        listStyle: {},
+    }
+  },
+  created() {
+    this.listStyle = {
+          display: 'grid',
+          gap: '24px',
+          gridTemplateColumns: `repeat(${this.columnNumber}, 1fr)`,
+        }
+  },
+  props: {
+    items: {
+        type: Array
+    },
+    columnNumber: {
+        type: Number,
+        default: 1
+      },
+    showTime: {
+        type: Boolean,
+        default: true
+    }
+  }, 
+
 };
 </script>
   
@@ -43,6 +71,7 @@ export default {
   gap: 24px;
   justify-items: center;
   .cover {
+    cursor: pointer;
     .img {
         width: 100%;
         img {
@@ -59,7 +88,7 @@ export default {
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
-    .time {
+    .time,.name {
         font-size: 12px;
         font-weight: 200;
     }

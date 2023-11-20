@@ -57,6 +57,11 @@ const router = createRouter({
       component: () => import('../views/artist.vue')
     },
     {
+      path: '/artist/:id/mv',
+      name: 'artistMvs',
+      component: () => import('../views/artistMvs.vue')
+    },
+    {
       path: '/search',
       component: () => import('../views/Search.vue'),
       props: route => ({query: route.query.q})
@@ -65,6 +70,11 @@ const router = createRouter({
       path: '/dailyTracks',
       name: 'dailyTracks',
       component: () => import('../views/dailyTracks.vue')
+    },
+    {
+      path: '/mv/:id',
+      name: 'mv',
+      component: () => import('../views/mv.vue')
     },
   ],
 })

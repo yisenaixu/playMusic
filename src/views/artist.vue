@@ -44,7 +44,7 @@
        <div class="mv">
          <div class="mv-header">
             <h1>MVs</h1>
-            <router-link class="seeMore" v-show="hasMoreMv" to="">查看全部</router-link> 
+            <router-link class="seeMore" v-show="hasMoreMv" :to="`/artist/${$route.params.id}/mv`">查看全部</router-link> 
          </div>
          <MvRow 
           :items="mvs"
