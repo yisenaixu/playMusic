@@ -9,7 +9,23 @@
             <div class="artists"> 艺人 </div>
             <div class="statistics">{{ artist.musicSize }}首歌,{{ artist.albumSize }}张专辑,{{ artist.mvSize }}个mv  </div>
             <div class="detail">{{ artist.briefDesc }}</div>
-            <div class="button"></div>
+            <div class="button">
+               <Mybutton
+                  symbolId="icon-play"
+                >
+                播放
+               </Mybutton>
+
+                <Mybutton
+                >
+                关注
+                </Mybutton>
+                
+                <Mybutton
+                :iconButton="true"
+                >...
+                </Mybutton>
+            </div>
          </div>
        </div>
        <div class="hot-songs">
@@ -25,8 +41,15 @@
          <h1>专辑</h1>
          <CoverRow :items="albums" type="album"/>
        </div>
-       <div>
-         <h1>mv</h1>
+       <div class="mv">
+         <div class="mv-header">
+            <h1>MVs</h1>
+            <router-link class="seeMore" v-show="hasMoreMv" to="">查看全部</router-link> 
+         </div>
+         <MvRow 
+          :items="mvs"
+          columnNumber="5"
+          />
        </div>
 
     </div>
@@ -35,29 +58,42 @@
 import Cover from '../components/Cover.vue'
 import CoverRow from '../components/CoverRow.vue'
 import TrackList from '../components/TrackList.vue'
-import { fetchArtistAlbums, fetchArtistDetail, fetchArtistHotSong } from '../api/artist'
+import Mybutton from '../components/Mybutton.vue'
+import MvRow from '../components/MvRow.vue'
+import { fetchArtistAlbums, fetchArtistDetail, fetchArtistHotSong, fetchArtistMv } from '../api/artist'
    export default {
     name: 'artist',
-    components: {Cover, TrackList, CoverRow},
+    components: {Cover, TrackList, CoverRow, Mybutton, MvRow},
     data() {
         return {
            artist: {},  
            songs: [],
            albums: [],
+           mvs: [],
+           hasMoreMv: false
         }
     },
     created() {
-        fetchArtistDetail(this.$route.params.id).then(res => {
+        fetchArtistDetail(this.$route.params.id)
+          .then(res => {
             console.log(res);
             this.artist = res.data.artist
-        })
-        fetchArtistHotSong(this.$route.params.id).then(res => {
+          })
+        fetchArtistHotSong(this.$route.params.id)
+          .then(res => {
             console.log(res);
             this.songs = res.songs;
-        })
-        fetchArtistAlbums(this.$route.params.id).then(res => {
+          })
+        fetchArtistAlbums(this.$route.params.id)
+          .then(res => {
            console.log(res);
            this.albums = res.hotAlbums;
+          })
+        fetchArtistMv({id: this.$route.params.id,limit: 10})
+          .then(res => {
+           console.debug(res);
+           this.mvs = res.mvs;
+           this.hasMoreMv = res.hasMore;
         })
     }
    }
@@ -104,8 +140,24 @@ import { fetchArtistAlbums, fetchArtistDetail, fetchArtistHotSong } from '../api
     -webkit-line-clamp: 3;
     overflow: hidden;
    }
+   .button {
+    margin-top: 80px;
+    display: flex;
+    justify-content: start;
+}
    }
-
  }
+ .mv {
+      .mv-header {
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         margin-right: 16px;
+         .seeMore {
+            font-size: 14px;
+            font-weight: 300;
+         }
+      }
+   }
     }
 </style>

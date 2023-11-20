@@ -1,7 +1,6 @@
 <template>
     <div class="cover-row">
         <div class="container">
-            <!-- <Cover class="artist"/> -->
             <Cover v-for="item in items" :key="item.id" :info="item" :type="type" showTitle="true" />
         </div> 
     </div>

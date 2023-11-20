@@ -63,14 +63,15 @@ export function fetchArtistHotSong(id) {
 
 /**
  * @description 获取歌手mv
- * @param {Number} id
+ * @param {Object} params 
+ * @param {number} params.id 歌手id
+ * @param {number} params.offset
+ * @param {number} params.limit  
  */
-export function fetchArtistMv(id) {
+export function fetchArtistMv(params) {
     return request({
         url: '/artist/mv',
         method: 'get',
-        params: {
-            id,
-        }
+        params,
     })
 }
