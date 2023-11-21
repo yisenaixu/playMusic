@@ -25,7 +25,7 @@
             </div>
             <div v-if="type !== 'artist'" :class="{subTitle: true, center:type === 'artist'}">
               {{
-                type === 'album' ? info.artist.name : info?.updateFrequency}}
+                type === 'album' ? info.artist?.name : info?.updateFrequency}}
             </div>
         </div>
     </div>    
@@ -47,6 +47,7 @@ export default {
     imgsrc() {
       let src = this.info?.picUrl ?? this.coverImgUrl ?? this.info?.coverImgUrl
       src = src + '?param=512y512'
+      console.log(this.info)
       console.log(src);
       return src
     },

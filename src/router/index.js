@@ -76,6 +76,11 @@ const router = createRouter({
       name: 'mv',
       component: () => import('../views/mv.vue')
     },
+    {
+      path: '/newAlbums',
+      name: 'newAlbums',
+      component: () => import('../views/newAlbums.vue')
+    },
   ],
 })
 

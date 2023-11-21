@@ -21,6 +21,7 @@ export default {
         allData: []
       }
     },
+    dailyTracks: [],
     userData: JSON.parse(localStorage.getItem('userData')) ?? {},
     settings: JSON.parse(localStorage.getItem('settings'))
 }

@@ -17,6 +17,8 @@ export function getRecommendSongList(limit) {
 
 /**
  * @description 调用此接口 , 可获得每日推荐歌单 ( 需要登录 )
+ * @param {Object} params
+ * @param {number} params.limit
  * @returns 
  */
 export function getDailyRecommendSongList(params) {

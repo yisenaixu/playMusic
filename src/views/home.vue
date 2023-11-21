@@ -17,7 +17,12 @@
           <CoverRow :items="artists" type="artist" />
         </div>
         <div class="index-row">
-          <div class="title">新专速递</div>
+          <div class="title">
+            <div>新专速递</div>
+            <div class="seeAll">
+              <router-link to="/newAlbums">查看全部</router-link>
+            </div>
+          </div>
           <CoverRow :items="albums" type="album"/>
         </div>
     </div>   
@@ -58,7 +63,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
   .home {
     padding: 0 10vw;
     min-width: 1320px;
@@ -72,5 +77,14 @@ export default {
     font-size: 32px;
     font-weight: 1000;
     margin-bottom: 24px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-right: 16px;
+    .seeAll {
+      font-size: 14px;
+      font-weight: 300;
+    }
   }
 </style> 
