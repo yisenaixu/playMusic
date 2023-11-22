@@ -2,13 +2,20 @@ import { isLoggedIn } from "./auth";
 import { getRecommendSongList, getDailyRecommendSongList, fetchRankList } from "../api/playlist";
 import { getAllTrack } from "../api/track";
 
-export async function getPersonalRecommendSongList(limit) {
+/**
+ * @description 获取推荐歌单的范围
+ * @param {number} left 
+ * @param {number} right 
+ * @returns 
+ */
+export async function getPersonalRecommendSongList(left, right) {
   if(isLoggedIn()) {
     const res = await getDailyRecommendSongList()     
-    console.log(res);
-    return res.recommend.slice(0,limit);
+    console.debug(res);
+    if(left < 0 || right > res.length) return ;
+    return res.recommend.slice(left,right);
   } else {
-    const res = await getRecommendSongList(limit)
+    const res = await getRecommendSongList(right - left)
     return res.result
   }
 }

@@ -5,7 +5,12 @@
              @click="activeCat = '全部'"
              >
               全部
-            </div>     
+            </div>   
+        <div :class="{all: true, button: true, active:activeCat === '排行榜'}"
+             @click="activeCat = '排行榜'"
+             >
+              排行榜
+        </div>  
         <div v-for="cat in settings.enabledPlaylistCategories" 
              :key="cat" 
              :class="{button: true, active:activeCat === cat}"
@@ -46,7 +51,7 @@
 
 <script>
 import { getHotPlayListCats, fetchAllCatlist } from '../api/cat';
-import {  fetchPlaylistByCat } from '../api/playlist'
+import {  fetchPlaylistByCat, fetchRankList } from '../api/playlist'
 import CoverRow from '../components/CoverRow.vue';
 import bigCats from '../utils/bigCats'
 import { mapState, mapMutations } from 'vuex';
@@ -72,6 +77,9 @@ export default {
         this.getHotCats();
         this.fetchAllCats();
         this.bigCats = bigCats
+        if(this.$route.query?.cat) {
+            this.activeCat = this.$route.query?.cat
+        }
         console.log(this.settings);
     },
     activated() {
@@ -101,16 +109,24 @@ export default {
             return this.catlist.filter(item => item.category === category)
         },
         fetchPlaylistByCat(isReplace = true) {
-            fetchPlaylistByCat(this.activeCat,this.limit,this.playlists.length).
-             then(res => {
-                          if(isReplace) {
-                           this.playlists = res.playlists;
-                         } else {
-                           this.playlists = [...this.playlists, ...res.playlists];
-                         }
-                          this.total = res.total;
-                          this.currentTotal += this.limit;
-                          })
+            if(this.activeCat === '排行榜') {
+                fetchRankList()
+                  .then(res => {
+                    this.playlists = res.list;
+                    this.currentTotal = res.list.length
+                  })
+            } else {
+                fetchPlaylistByCat(this.activeCat,this.limit,this.playlists.length)
+                  .then(res => {
+                              if(isReplace) {
+                               this.playlists = res.playlists;
+                             } else {
+                               this.playlists = [...this.playlists, ...res.playlists];
+                             }
+                              this.total = res.total;
+                              this.currentTotal += this.limit;
+                              })
+                }
         },
         loadmore() {
            this.fetchPlaylistByCat(false);
