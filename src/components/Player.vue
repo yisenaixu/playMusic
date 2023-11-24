@@ -2,31 +2,34 @@
     <div class="player">
         <div class="progressBar">
             <vue-slider
-              v-model="temValue"
+              v-model="progress"
               :min="0"
-              :max="1000000"
+              :max="200"
               :interval="1"
               :height="2"
+              :duration="0"
               :dotSize="8"
               :dragOnClick="true"
             ></vue-slider>
         </div>
+        {{ console.log(player.currentTrackDuration) }}
         <div class="control">
             <div class="leftControl">
-                <!-- <TrackListItem type="playlist" :isSimplify="true"/> -->
+                <TrackList type="tracklist" :isShowTime="false" :songs="[currentTrack]"/>
                 <button-icon>
                     <svg-icon symbolId="icon-heart" className="svgIcon"></svg-icon>
                 </button-icon>
             </div>
             <div class="middleControl">
                 <button-icon title="上一首">
-                    <svg-icon symbolId="icon-previous" className="svgIcon"></svg-icon>
+                    <svg-icon symbolId="icon-previous" className="svgIcon" @click="playPrevTrack"></svg-icon>
                 </button-icon>
                 <button-icon>
-                    <svg-icon symbolId="icon-play" className="svgIcon big"></svg-icon>
+                    <svg-icon v-if="!playing" symbolId="icon-play" className="svgIcon big" @click='play'></svg-icon>
+                    <svg-icon v-if="playing" symbolId="icon-pause" className="svgIcon big" @click="pause"></svg-icon>
                 </button-icon>
                 <button-icon>
-                    <svg-icon symbolId="icon-next" className="svgIcon"></svg-icon>
+                    <svg-icon symbolId="icon-next" className="svgIcon" @click="playNextTrack"></svg-icon>
                 </button-icon>
             </div>
             <div class="rightControl">
@@ -38,7 +41,7 @@
                     </button-icon>
                     <div class="volumeBar">
                         <vue-slider
-                        v-model="temValue"
+                        v-model="volume"
                         :min="0"
                         :max="1"
                         :interval="0.01"
@@ -61,18 +64,67 @@
 <script>
 import ButtonIcon from './ButtonIcon.vue';
 import SvgIcon from './SvgIcon.vue';
-import TrackListItem from './TrackListItem.vue';
+import TrackList from './TrackList.vue';
 import VueSlider from 'vue-slider-component'
 import 'vue-slider-component/theme/antd.css'
 import '../assets/css/slider.css'
+import { mapState } from 'vuex';
 export default {
 
     name: 'Player',
-    components: {TrackListItem, ButtonIcon, SvgIcon, VueSlider},
+    components: {TrackList, ButtonIcon, SvgIcon, VueSlider},
     data() {
         return {
-            temValue: 100,
+            current: 0
         }
+    },
+    mounted() {
+        setInterval(() => {
+            this.current = this.current + 1
+            console.log(this.player.progress,this.progress)
+            // this.player.progress += 1
+            // console.log(this.volume)
+        }, 1000);
+    },
+    computed: {
+        ...mapState(['player']),
+        currentTrack() {
+            return this.player.currentTrack
+        },
+        playing() {
+            return this.player.playing
+        },
+        volume:{
+            get() {
+                return this.player.volume
+            },
+            set(value) {
+                this.player.volume = value  
+            }
+        },
+        progress:{
+            get() {
+                return this.player.progress
+            },
+            set(value) {
+                this.player.progress = value 
+            }
+        },
+    },
+    methods: {
+       playPrevTrack() {
+        return this.player.playPrevTrack()
+       },
+       playNextTrack() {
+        return this.player.playNextTrack()
+       },
+       play() {
+        return this.player.play()
+       },
+       pause() {
+        return this.player.pause()
+       }
+
     }
 }
 </script>

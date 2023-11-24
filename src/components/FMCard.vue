@@ -37,7 +37,7 @@ export default {
 
 <style scoped>
       .card {
-        width: 80%;
+        width: 100%;
         /* border: 1px solid black; */
         cursor: pointer;
         z-index: 1;

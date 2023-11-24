@@ -1,7 +1,7 @@
 <template>
    <div class="card" @click="$router.push({path: '/dailyTracks'})">
       <div class="container">
-         <img src="/.png" alt="">
+         <img :src="coverUrl" alt="">
          <div class="title-box">
            <div class="title">
              <div>每</div>
@@ -22,15 +22,30 @@
 <script>
 import ButtonIcon from './ButtonIcon.vue'
 import SvgIcon from './SvgIcon.vue'
+import { mapActions, mapState } from 'vuex'
 export default {
   components: { ButtonIcon, SvgIcon },
-    name: 'DailyRecSongCard'
+    name: 'DailyRecSongCard',
+    computed: {
+    ...mapState(['dailyTracks']),
+    coverUrl() {
+      return `${
+        this.dailyTracks[0]?.al.picUrl
+      }?param=1024y1024`;
+    },
+  },
+    methods: {
+    ...mapActions(['fetchDailyTracks'])
+  },
+  created() {
+    this.fetchDailyTracks()
+  }
 }
 </script>
 
 <style scoped>
     .card { 
-        width: 80%;
+        width: 100%;
         /* border: 1px solid black; */
         cursor: pointer;
         z-index: 1;

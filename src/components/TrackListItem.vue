@@ -2,6 +2,7 @@
     <div 
       class="track"
       :class="{playlist:type==='playlist',album:type==='album',tracklist:type==='tracklist'}"
+      @click = "$store.state.player._replaceCurrentTrack(track.id)"
       @mouseenter="isHover = true"
       @mouseleave="isHover = false"
       >
@@ -31,6 +32,8 @@
         {{al?.name}}
       </div>
       <div v-show="isShowTime" class="time">
+        <SvgIcon v-show="isHover" symbolId="icon-play" className="svgIcon mr"/>
+        <SvgIcon v-show="isHover" symbolId="icon-list" className="svgIcon mr"/>
         <SvgIcon v-show="isHover" symbolId="icon-heart" className="svgIcon mr"/>
         {{ dt }}
       </div>

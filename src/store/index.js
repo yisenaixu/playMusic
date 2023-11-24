@@ -56,11 +56,23 @@ import state from './state'
 import mutations from './mutations'
 import actions from "./actions"
 import setLocalStorage from "./plugins/setLocalStorage"
+import Player from "../utils/player"
 let plugins = [setLocalStorage];
+
 const store = createStore({
   state,
   mutations,
   actions,
   plugins
 })
+
+let player = new Player();
+// 代理 每次更改做保存
+player = new Proxy(player, {
+  set(target, prop, val) {
+    target[prop] = val;
+    return true;
+  }
+})
+store.state.player = player
 export default store;

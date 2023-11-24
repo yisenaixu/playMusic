@@ -22,5 +22,8 @@ export default {
     },
     updateDailyTracks(state, dailyTracks) {
         state.dailyTracks = dailyTracks;
+    },
+    updatePlayerProgress(state, progress) {
+        state.player._progress = progress
     }
 }

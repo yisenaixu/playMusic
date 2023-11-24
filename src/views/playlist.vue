@@ -11,6 +11,7 @@
             <div class="detail">{{ playlist.description }}</div>
             <div class="button">
                 <Mybutton
+                  @click="() => $store.state.player.replacePlaylist(playlist.trackIds)"
                   symbolId="icon-play"
                 >播放</Mybutton>
 
@@ -68,6 +69,11 @@ export default {
     mounted() {
         getSongListDetail(this.$route.params.id).then(res => {
             this.playlist = res.playlist;
+
+            //歌单所有歌曲id转化
+            this.playlist.trackIds = this.playlist.trackIds
+                                       .map(item => item.id)
+            console.log('歌单歌曲id:',this.playlist.trackIds);
         });
         getPartTrack(this.$route.params.id, this.offset).then(res => {
             console.log('1','挂载');

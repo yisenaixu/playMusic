@@ -22,6 +22,7 @@ export default {
       }
     },
     dailyTracks: [],
+    player: JSON.parse(localStorage.getItem('player')),
     userData: JSON.parse(localStorage.getItem('userData')) ?? {},
     settings: JSON.parse(localStorage.getItem('settings'))
 }
