@@ -4,12 +4,15 @@
             <vue-slider
               v-model="progress"
               :min="0"
-              :max="200"
+              :max="player.currentTrackDuration"
               :interval="1"
               :height="2"
               :duration="0"
               :dotSize="8"
               :dragOnClick="true"
+              :tooltip-formatter="formatTrackTime"
+              :lazy="true"
+              :silent="true"
             ></vue-slider>
         </div>
         {{ console.log(player.currentTrackDuration) }}
@@ -24,15 +27,24 @@
                 <button-icon title="上一首">
                     <svg-icon symbolId="icon-previous" className="svgIcon" @click="playPrevTrack"></svg-icon>
                 </button-icon>
-                <button-icon>
-                    <svg-icon v-if="!playing" symbolId="icon-play" className="svgIcon big" @click='play'></svg-icon>
-                    <svg-icon v-if="playing" symbolId="icon-pause" className="svgIcon big" @click="pause"></svg-icon>
+                <button-icon @click='playing ? pause() : play()'>
+                    <svg-icon v-if="!playing" symbolId="icon-play" className="svgIcon big" ></svg-icon>
+                    <svg-icon v-if="playing" symbolId="icon-pause" className="svgIcon big" ></svg-icon>
                 </button-icon>
                 <button-icon>
                     <svg-icon symbolId="icon-next" className="svgIcon" @click="playNextTrack"></svg-icon>
                 </button-icon>
             </div>
             <div class="rightControl">
+                <button-icon @click="player.mode === 'repeat' 
+                                    ? player.switchModeOne()
+                                    : player.mode === 'one'
+                                      ? player.switchModeShuffle()
+                                      : player.switchModeRepeat() ">
+                    <svg-icon v-show="player.mode === 'shuffle'" symbolId="icon-shuffle" className="svgIcon"></svg-icon>
+                    <svg-icon v-show="player.mode === 'repeat'" symbolId="icon-repeat" className="svgIcon"></svg-icon>
+                    <svg-icon v-show="player.mode === 'one'" symbolId="icon-repeat-1" className="svgIcon"></svg-icon>
+                </button-icon>
                 <div class="volumeControl">
                     <button-icon>
                        <svg-icon symbolId="icon-volume" className="svgIcon"></svg-icon>
@@ -69,6 +81,7 @@ import VueSlider from 'vue-slider-component'
 import 'vue-slider-component/theme/antd.css'
 import '../assets/css/slider.css'
 import { mapState } from 'vuex';
+import { formatTime } from '../utils/common';
 export default {
 
     name: 'Player',
@@ -107,7 +120,7 @@ export default {
         return this.player.playPrevTrack()
        },
        playNextTrack() {
-        return this.player.playNextTrack()
+        return this.player.playNextTrack(false)
        },
        play() {
         return this.player.play()
@@ -121,6 +134,9 @@ export default {
         } else {
             this.$router.go(-1);
         }
+       },
+       formatTrackTime(val) {
+            return  formatTime(val) 
        }
 
     }
@@ -131,12 +147,10 @@ export default {
         min-width: 1320px;
         position: sticky;
         z-index: 9999;
-        // box-sizing: border-box;
         bottom: 0;
         background: var(--color-body-bg);
         left: 0;
         right: 0;
-        // width: 100%;
         padding: 0 10vw;
         .progressBar {
             width: 100%;

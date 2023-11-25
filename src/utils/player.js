@@ -14,10 +14,13 @@ export default class {
         this._current = 0; // 当前播放歌曲在列表的索引
         this._currentTrack = {}; //当前播放歌曲的详细信息
         this._currentTrackDuration = 1000; //当前播放歌曲的时长
-        
+        this._mode = 'repeat' // 播放模式 repeat | one | shuffle
         // howler 音频库
         this._howler = null
-
+        // 解决循环引用
+        Object.defineProperty(this, '_howler', {
+            enumerable: false,
+          });
         this._init()
         
     } 
@@ -31,14 +34,14 @@ export default class {
     }
 
     get progress() {
-        console.log(this._progress,'get');
+        // console.log(this._progress,'get');
         return this._progress
     }
 
     set progress(value) {
         this._howler?.seek(value)
         this._progress = value
-        console.log('setProgress')
+        // console.log('setProgress')
     }
 
     get volume() {
@@ -74,15 +77,30 @@ export default class {
     set currentTrack(value) {
         this._currentTrack = value
     }
+    
+    get mode() {
+        return this._mode
+    }
+
+    set mode(value) {
+        this._mode = value
+    }
 
     get currentTrackDuration() {
-        return this._currentTrack.dt || 1000
+        const trackDuration =  this._currentTrack.dt || 1000
+        let duration = ~~(trackDuration / 1000);
+        console.debug(trackDuration)
+        console.debug(duration,'duration')
+        return duration;
     }
 
     _init() {
         this._loadFromLocalStorage();
         this._howler?.volume(this.volume);
         
+        // 读缓存中歌曲新建立播放器
+        this._replaceCurrentTrack(this.currentTrack?.id)
+          .then(() => this._howler.pause())
         this._setProgerss();
     }
     _setProgerss() {
@@ -90,7 +108,7 @@ export default class {
             if(this._howler === null) return ;
             // this._progress = this._howler.seek();
             store.commit('updatePlayerProgress', this._howler.seek())
-            console.log('计时器');
+            // console.log('计时器');
         },1000)
     }
     // 从localStorage加载Player
@@ -100,6 +118,14 @@ export default class {
        for(const [key,value] of Object.entries(player)) {
         this[key] = value
        } 
+    }
+    _saveToLocalStorage() {
+        const player = {}
+        for(const [key, value] of Object.entries(this)) {
+            if(key === '_playing') continue;
+            player[key] = value
+        }
+        localStorage.setItem('player',JSON.stringify(player));
     }
     /**
      * @description 添加歌曲到播放队列
@@ -143,8 +169,8 @@ export default class {
        return getTrackDetail(id)
                 .then(res => {
                     const track = res.songs[0]
-                    this._currentTrack = track
-                    this._replaceCurrentTrackAudio(track)
+                    store.commit('updatePlayerTrack',track)
+                    return this._replaceCurrentTrackAudio(track)
                 }) 
     } 
     /**
@@ -154,7 +180,7 @@ export default class {
         return this._getAudioSource(track)
                  .then(source => {
                    if(source) {
-                     this._playAudioSource(source)
+                     return this._playAudioSource(source)
                    }        
                  })
     }
@@ -185,7 +211,7 @@ export default class {
         html5 : true, // html5 audio 流式播放 适合大文件
         format: ['mp3','flac'], // 播放器默认使用文件默认后缀，不符合时使用此类转换
         onend: () => {
-            this._playNextTrack();
+            this._playNextTrack(true);
         }
        })
        console.log('播放器初始化完成')
@@ -196,8 +222,25 @@ export default class {
      * @description 获取下一首歌的id
      * @returns 
      */
-    _getNextTrack() {
-        const next = this.current + 1;
+    _getNextTrack(auto) {
+        let next;
+        // auto 自动加载下一首歌
+        if(auto === false) {
+            next = this.current + 1
+                if(next === this.list.length) {
+                    next = 0;
+                }
+        } else {
+           // 单曲循环 or 循环播放
+            if(this.mode === 'one') {
+                next = this.current
+            } else if(this.mode === 'repeat') {
+                next = this.current + 1
+                if(next === this.list.length) {
+                    next = 0;
+                }
+            } 
+        }
 
         return [this.list[next],next]
     }
@@ -206,8 +249,10 @@ export default class {
      * @returns 
      */
     _getPrevTrack() {
-        const next = this.current - 1;
-    
+        let next = this.current - 1;
+        if(next === -1) {
+            next = this.list.length -1;
+        }
         return [this.list[next],next]
     }
     
@@ -215,8 +260,8 @@ export default class {
      * @description 播放下一首歌
      * @returns 
      */
-    _playNextTrack() {
-       const [trackId, index] = this._getNextTrack()
+    _playNextTrack(auto) {
+       const [trackId, index] = this._getNextTrack(auto)
        if(trackId === undefined) {
          console.log('停止播放')
          this._howler?.stop();
@@ -227,8 +272,8 @@ export default class {
        this._replaceCurrentTrack(trackId)
        return true
     }
-    playNextTrack() {
-        return this._playNextTrack();
+    playNextTrack(auto) {
+        return this._playNextTrack(auto);
     }
      /**
      * @description 播放上一首歌
@@ -260,12 +305,13 @@ export default class {
      * @returns
      */
     play() {
+        console.log('播放')
         if(this._howler.playing()) return ;
         this._howler?.play();
-        
+
         this._howler?.once('play', () => {
-            this._howler?.fade(0, this.volume, 200);
             console.log('播放')
+            this._howler?.fade(0, this.volume, 200);
             this.playing = true
         })
     
@@ -282,5 +328,22 @@ export default class {
             this.playing = false
         })
     }
-    
+    /**
+     * @description 切换播放模式 到单曲循环
+     */
+    switchModeOne() {
+        this.mode = 'one'
+    }
+    /**
+     * @description 切换播放模式 到随机播放
+     */
+    switchModeShuffle() {
+        this.mode = 'shuffle'
+    }
+    /**
+     * @description 切换播放模式 到循环播放
+     */
+    switchModeRepeat() {
+        this.mode = 'repeat'
+    }
 }

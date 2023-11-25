@@ -71,6 +71,8 @@ let player = new Player();
 player = new Proxy(player, {
   set(target, prop, val) {
     target[prop] = val;
+    if (prop === '_howler') return true;
+    target._saveToLocalStorage();
     return true;
   }
 })

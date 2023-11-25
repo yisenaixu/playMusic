@@ -25,5 +25,8 @@ export default {
     },
     updatePlayerProgress(state, progress) {
         state.player._progress = progress
+    },
+    updatePlayerTrack(state, track) {
+        state.player.currentTrack = track
     }
 }

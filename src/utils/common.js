@@ -36,3 +36,10 @@ export function transformNumber(number) {
       return number;
 }
 
+export function formatTime(val) {
+  if(!val) return '';
+  let min = ~~(val / 60)
+  let sec = ~~((val % 60)).toString().padStart(2, '0');
+  return `${min}:${sec}`;
+}
+
