@@ -90,7 +90,7 @@ export default class {
             if(this._howler === null) return ;
             // this._progress = this._howler.seek();
             store.commit('updatePlayerProgress', this._howler.seek())
-            console.log(this._howler.seek(),this.progress);
+            console.log('计时器');
         },1000)
     }
     // 从localStorage加载Player
@@ -106,11 +106,34 @@ export default class {
      * @param {number} trackId 歌曲id
      * @param {boolean} playNow 立刻播放 | 下一首
      */
-    _addTrackToList(trackId, playNow) {
-        this._list.push(trackId);
+    addTrackToList(trackId, playNow) {
         if(playNow) {
-            this._list.findIndex( item => item.id === trackId)
-
+            if(this.list.length === 0) {
+                this.list.push(trackId);
+                this.current = 0;
+                this._replaceCurrentTrack(trackId)
+            } else {
+                //去重
+                if(this.list.includes(trackId)) {
+                    //被删除的索引
+                    const index = this.list.findIndex(item => {
+                        return item === trackId
+                    })
+                    console.debug(index,this.current)
+                    //列表索引变化，current对应改变
+                    if(this.current > index) {
+                        this.current = this.current - 1;
+                    }
+                    this.list.splice(index,1)
+                    console.debug(this.list)
+                }
+                this.list.splice(this.current + 1,0,trackId);
+                console.debug(this.list)
+                this.current = this.current + 1;
+                this._replaceCurrentTrack(trackId);
+            }
+        } else {
+            this.list.push(trackId);
         }
     }
     /**

@@ -8,6 +8,7 @@
               :type="type"
               :trackNo="index + 1"
               :isShowTime="isShowTime"
+              :highLightPlayingTrack="highLightPlayingTrack"
             />
         </div>
     </div>
@@ -30,6 +31,10 @@ import TrackListItem from './TrackListItem.vue'
         default: 1
       },
       isShowTime: {
+        type: Boolean,
+        default: true
+      },
+      highLightPlayingTrack: {
         type: Boolean,
         default: true
       }

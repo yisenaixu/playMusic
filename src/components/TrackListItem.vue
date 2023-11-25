@@ -1,8 +1,10 @@
 <template>
     <div 
       class="track"
-      :class="{playlist:type==='playlist',album:type==='album',tracklist:type==='tracklist'}"
-      @click = "$store.state.player._replaceCurrentTrack(track.id)"
+      :class="{playlist:type==='playlist',
+               album:type==='album',
+               tracklist:type==='tracklist',
+               highLight:highLight}"
       @mouseenter="isHover = true"
       @mouseleave="isHover = false"
       >
@@ -32,8 +34,8 @@
         {{al?.name}}
       </div>
       <div v-show="isShowTime" class="time">
-        <SvgIcon v-show="isHover" symbolId="icon-play" className="svgIcon mr"/>
-        <SvgIcon v-show="isHover" symbolId="icon-list" className="svgIcon mr"/>
+        <SvgIcon v-show="isHover" @click="() => player.addTrackToList(this.track.id, true)" symbolId="icon-play" className="svgIcon mr"/>
+        <SvgIcon v-show="isHover" @click="() => player.addTrackToList(this.track.id, false)" symbolId="icon-plus" className="svgIcon mr"/>
         <SvgIcon v-show="isHover" symbolId="icon-heart" className="svgIcon mr"/>
         {{ dt }}
       </div>
@@ -41,18 +43,38 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import {transformTime} from '../utils/common'
 import SvgIcon from './SvgIcon.vue';
   export default {
   components: { SvgIcon },
     name: 'TrackListItem',
-    props: ['track', 'type' ,'trackNo','isShowTime'],
+    props: {
+      track: {
+        type: Object,
+      }, 
+      type: {
+        type: String,
+        default: 'playlist'
+      } ,
+      trackNo: {
+        type: Number
+      },
+      isShowTime: {
+        type: Boolean,
+        default: true
+      },
+      highLightPlayingTrack: {
+        type: Boolean,
+        default: true
+      },},
     data() {
       return {
         isHover: false,
       }
     },
     computed: {
+        ...mapState(['player']),
         al() {
             return this?.track?.al;
         },
@@ -62,6 +84,9 @@ import SvgIcon from './SvgIcon.vue';
         dt() {
             return transformTime(this?.track?.dt)
             // return this.song.dt
+        },
+        highLight() {
+          return this.player.playing && this.player.currentTrack.id === this.track.id && this.highLightPlayingTrack
         }
     },
   }
@@ -74,6 +99,7 @@ import SvgIcon from './SvgIcon.vue';
     align-items: center;
     padding: 15px;
     border-radius: 8px;
+    cursor: pointer;
     &:hover {
       background: var(--color-secondary-bg-for-transparent);
       transition: 0.3s;
@@ -194,5 +220,13 @@ import SvgIcon from './SvgIcon.vue';
     font-weight: 300;
 }
 
+}
+.highLight {
+  background: var(--color-primary-bg);
+  color: var(--color-primary);
+  &:hover {
+    background: var(--color-primary-bg);
+    color: var(--color-primary);
+  }
 }
 </style>

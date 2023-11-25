@@ -14,8 +14,8 @@
         </div>
         {{ console.log(player.currentTrackDuration) }}
         <div class="control">
-            <div class="leftControl">
-                <TrackList type="tracklist" :isShowTime="false" :songs="[currentTrack]"/>
+            <div class="leftControl">                                                   
+                <TrackList type="tracklist" :isShowTime="false" :highLightPlayingTrack="false" :songs="[currentTrack]" />
                 <button-icon>
                     <svg-icon symbolId="icon-heart" className="svgIcon"></svg-icon>
                 </button-icon>
@@ -51,7 +51,7 @@
                         </vue-slider>
                     </div>
                 </div> 
-                <button-icon>
+                <button-icon  @click="navigateList">
                     <svg-icon symbolId="icon-list" className="svgIcon"></svg-icon>
                 </button-icon>
                 <button-icon>
@@ -74,17 +74,8 @@ export default {
     name: 'Player',
     components: {TrackList, ButtonIcon, SvgIcon, VueSlider},
     data() {
-        return {
-            current: 0
+        return { 
         }
-    },
-    mounted() {
-        setInterval(() => {
-            this.current = this.current + 1
-            console.log(this.player.progress,this.progress)
-            // this.player.progress += 1
-            // console.log(this.volume)
-        }, 1000);
     },
     computed: {
         ...mapState(['player']),
@@ -123,6 +114,13 @@ export default {
        },
        pause() {
         return this.player.pause()
+       },
+       navigateList() {
+        if(this.$route.name !== 'list') {
+            this.$router.push({path: '/list'})
+        } else {
+            this.$router.go(-1);
+        }
        }
 
     }

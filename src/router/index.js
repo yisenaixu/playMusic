@@ -81,6 +81,11 @@ const router = createRouter({
       name: 'newAlbums',
       component: () => import('../views/newAlbums.vue')
     },
+    {
+      path: '/list',
+      name: 'list',
+      component: () => import('../views/list.vue')
+    },
   ],
 })
 
