@@ -12,7 +12,10 @@
                   v-show="focus"
                   >
                   <button @click.stop="play" class="play-button">
-                    <svgIcon symbolId="icon-play" className="svgIcon"/>
+                    <svgIcon
+                      @click="play" 
+                      symbolId="icon-play" 
+                      className="svgIcon"/>
                   </button>
                 </div>
             </div>
@@ -32,6 +35,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { transformDate, transformNumber } from '../utils/common'
 import SvgIcon from './SvgIcon.vue'
 export default {
@@ -44,6 +48,7 @@ export default {
   name: 'cover',
   props: ['info', 'type', 'showTitle', 'coverImgUrl'],
   computed: {
+    ...mapState(['player']),
     imgsrc() {
       let src = this.info?.picUrl ?? this.coverImgUrl ?? this.info?.coverImgUrl
       src = src + '?param=512y512'
@@ -60,7 +65,14 @@ export default {
       this.$router.push( {name: this.type, params:{id:this.info.id}})
     },
     play() {
-
+      console.log(this.type)
+      const playActions = {
+        album: this.player.playAlbumById,
+        playlist: this.player.playPlaylistById,
+        artist: this.player.playArtistById,
+      }
+      // 方法变为以playActions使用 所以this值改变 bind重新绑定
+      playActions[this.type].bind(this.player)(this.info.id);
     }
   }
 }
@@ -140,7 +152,7 @@ export default {
         background: rgba(255, 255, 255, 0.14);
         border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 50%;
-        cursor: default;
+        cursor: pointer;
         transition: all 0.2s;
     }
 </style>

@@ -12,6 +12,7 @@
             <div class="button">
                 <Mybutton
                   symbolId="icon-play"
+                  @click="$store.state.player.replacePlaylist(songsId)"
                 >播放</Mybutton>
 
                 <Mybutton
@@ -58,6 +59,7 @@ export default {
             offset: 0,
             album: {},
             songs: {},
+            songsId: [],
             moreAlbums: [],
         };
     },
@@ -87,6 +89,7 @@ export default {
             await fetchAlbumDetail(id).then(res => {
             this.album = res.album;
             this.songs = res.songs;
+            this.songsId = this.songs.map(item => item.id)
             });
             await nextTick();
             fetchArtistAlbums(this.album?.artist?.id, 5).then(res => {

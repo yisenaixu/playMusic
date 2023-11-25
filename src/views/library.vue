@@ -11,11 +11,10 @@
           <div class="bottom">
             <div class="text">
               我喜欢的音乐
-              {{ console.debug(liked.playlists) }}
               <div class="subtext">{{ liked.playlists[0]?.trackCount }}首歌</div>
             </div>
             <div class="button">
-              <button @click.stop="play" class="play-button">
+              <button @click.stop="() => player.playPlaylistById(liked.playlists[0].id)" class="play-button">
                 <svgIcon symbolId="icon-play" className="svgIcon" />
               </button>
             </div>
@@ -105,7 +104,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(['liked','userData']),
+    ...mapState(['liked','userData','player']),
     playlists() {
       if(this.playlistType === 'all') {
         return this.liked.playlists
@@ -206,7 +205,7 @@ export default {
               background: var(--color-primary);
               border: 1px solid rgba(255, 255, 255, 0.08);
               border-radius: 50%;
-              cursor: default;
+              cursor: pointer;
               transition: all 0.2s;
             }
           }

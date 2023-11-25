@@ -11,7 +11,7 @@
            </div>
          </div>
          <div class="button-box">
-            <button>
+            <button @click.stop="$store.state.player.replacePlaylist(trackIds)">
                 <svg-icon symbolId="icon-play" className="svgIcon"></svg-icon>
             </button>
          </div>
@@ -33,6 +33,9 @@ export default {
         this.dailyTracks[0]?.al.picUrl
       }?param=1024y1024`;
     },
+    trackIds() {
+      return this.dailyTracks.map(item => item.id)
+    }
   },
     methods: {
     ...mapActions(['fetchDailyTracks'])
@@ -93,6 +96,7 @@ export default {
        bottom: 16px;
        border: none;
        background: transparent;
+       cursor: pointer;
     }
     @keyframes move {
      0% {

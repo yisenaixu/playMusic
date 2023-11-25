@@ -2,6 +2,9 @@ import { getTrackDetail, songUrl } from "../api/track";
 import { isLoggedIn } from "./auth";
 import { Howl, Howler } from "howler";
 import store from "../store/index";
+import { getSongListDetail } from "../api/playlist";
+import { fetchAlbumDetail } from "../api/album";
+import { fetchArtistHotSong } from "../api/artist";
 export default class {
     constructor() {
         //播放器状态
@@ -14,6 +17,8 @@ export default class {
         this._current = 0; // 当前播放歌曲在列表的索引
         this._currentTrack = {}; //当前播放歌曲的详细信息
         this._currentTrackDuration = 1000; //当前播放歌曲的时长
+        this._shuffleListIndex = [] // list的keys 的随机数组 current = shuffleListIndex[x]
+        this._shuffleCurrent = 0; //shuffleListIndex 当前所处位置的索引 x
         this._mode = 'repeat' // 播放模式 repeat | one | shuffle
         // howler 音频库
         this._howler = null
@@ -21,8 +26,7 @@ export default class {
         Object.defineProperty(this, '_howler', {
             enumerable: false,
           });
-        this._init()
-        
+        this._init()    
     } 
     
     get playing() {
@@ -77,7 +81,23 @@ export default class {
     set currentTrack(value) {
         this._currentTrack = value
     }
-    
+
+    get shuffleListIndex() {
+        return this._shuffleListIndex
+    }
+
+    set shuffleListIndex(value) {
+        this._shuffleListIndex = value
+    }
+
+    get shuffleCurrent() {
+        return this._shuffleCurrent
+    }
+
+    set shuffleCurrent(value) {
+        this._shuffleCurrent = value
+    }
+
     get mode() {
         return this._mode
     }
@@ -294,12 +314,15 @@ export default class {
      playPrevTrack() {
         return this._playPrevTrack();
      }
-    // 添加整个歌单到播放队列
+    /**
+     * @description 添加整个歌单/专辑/歌手热曲到播放队列
+     */
     replacePlaylist(trackIds) {
       this.list = trackIds
       this.current = 0
       this._replaceCurrentTrack(this.list[0])
     }
+
         /**
      * @description 播放
      * @returns
@@ -346,4 +369,37 @@ export default class {
     switchModeRepeat() {
         this.mode = 'repeat'
     }
+
+    /**
+     * @description 播放歌单歌曲 cover组件表面使用
+     */
+    playPlaylistById(id) {
+        getSongListDetail(id)
+          .then(res => {
+            let trackIds = res.playlist.trackIds.map(item => item.id);
+            console.log(this);
+            this.replacePlaylist(trackIds);
+          })
+    }
+    /**
+     * @description 播放专辑歌曲 cover组件表面使用
+     */
+    playAlbumById(id) {
+        fetchAlbumDetail(id)
+          .then(res => {
+            let trackIds = res.songs.map(item => item.id);
+            this.replacePlaylist(trackIds);
+          })
+    }
+     /**
+     * @description 播放歌手歌曲 cover组件表面使用
+     */
+     playArtistById(id) {
+        fetchArtistHotSong(id)
+           .then(res => {
+             let trackIds = res.songs.map(item => item.id);
+             console.log(this);
+             this.replacePlaylist(trackIds);
+           })
+     }
 }

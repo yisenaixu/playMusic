@@ -14,8 +14,9 @@
         </div>
         <div class="detail">{{ artist.briefDesc }}</div>
         <div class="button">
-          <Mybutton symbolId="icon-play"> 播放 </Mybutton>
-
+          <Mybutton 
+          @click="$store.state.player.replacePlaylist(songsId)"
+          symbolId="icon-play"> 播放 </Mybutton>
           <Mybutton> 关注 </Mybutton>
 
           <Mybutton :iconButton="true">... </Mybutton>
@@ -72,6 +73,7 @@ export default {
     return {
       artist: {},
       songs: [],
+      songsId: [],
       songsLimit: 16,
       albums: [],
       mvs: [],
@@ -91,6 +93,7 @@ export default {
     fetchArtistHotSong(this.$route.params.id).then((res) => {
       console.log(res);
       this.songs = res.songs;
+      this.songsId = this.songs.map(item => item.id)
     });
     fetchArtistAlbums(this.$route.params.id).then((res) => {
       console.log(res);
