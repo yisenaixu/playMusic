@@ -34,7 +34,7 @@
               <svg-icon symbolId="icon-login" class="svg-icon"></svg-icon>
               登录
          </div>
-         <div v-if="!isLoggedIn()" class="item" @click="goSettings">
+         <div v-if="isLoggedIn()" class="item" @click="goSettings">
              <svg-icon symbolId="icon-settings" class="svg-icon"></svg-icon>
               设置
          </div>

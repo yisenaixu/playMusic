@@ -5,6 +5,7 @@ import store from "../store/index";
 import { getSongListDetail } from "../api/playlist";
 import { fetchAlbumDetail } from "../api/album";
 import { fetchArtistHotSong } from "../api/artist";
+import { fm } from "../api/fm";
 export default class {
     constructor() {
         //播放器状态
@@ -19,6 +20,9 @@ export default class {
         this._currentTrackDuration = 1000; //当前播放歌曲的时长
         this._shuffleListIndex = [] // list的keys 的随机数组 current = shuffleListIndex[x]
         this._shuffleCurrent = 0; //shuffleListIndex 当前所处位置的索引 x
+        this._isFm = false; // 是否是fm播放
+        this._FmTrack = {}; // 当前fm播放歌曲
+        this._FmNextTrack = {}; // 下一首fm播放歌曲
         this._mode = 'repeat' // 播放模式 repeat | one | shuffle
         // howler 音频库
         this._howler = null
@@ -105,6 +109,14 @@ export default class {
     set mode(value) {
         this._mode = value
     }
+    
+    get isFm() {
+        return this._isFm
+    }
+    
+    get FmTrack() {
+        return this._FmTrack
+    }
 
     get currentTrackDuration() {
         const trackDuration =  this._currentTrack.dt || 1000
@@ -121,6 +133,14 @@ export default class {
         // 读缓存中歌曲新建立播放器
         this._replaceCurrentTrack(this.currentTrack?.id)
           .then(() => this._howler.pause())
+
+        // 初始化fm
+        if(Object.keys(this._FmTrack).length === 0) {
+            fm().then(res => {
+                this._FmTrack = res.data[0];
+                this._FmNextTrack = res.data[1];
+            })
+        }
         this._setProgerss();
     }
     _setProgerss() {
@@ -231,7 +251,7 @@ export default class {
         html5 : true, // html5 audio 流式播放 适合大文件
         format: ['mp3','flac'], // 播放器默认使用文件默认后缀，不符合时使用此类转换
         onend: () => {
-            this._playNextTrack(true);
+            this.playNextTrack(true);
         }
        })
        console.log('播放器初始化完成')
@@ -293,7 +313,11 @@ export default class {
        return true
     }
     playNextTrack(auto) {
-        return this._playNextTrack(auto);
+        if(this._isFm) {
+           return this._playNextFmTrack(); 
+        } else {
+           return this._playNextTrack(auto); 
+        }
     }
      /**
      * @description 播放上一首歌
@@ -318,9 +342,49 @@ export default class {
      * @description 添加整个歌单/专辑/歌手热曲到播放队列
      */
     replacePlaylist(trackIds) {
+      this._isFm = false;
       this.list = trackIds
       this.current = 0
       this._replaceCurrentTrack(this.list[0])
+    }
+    
+    /**
+     * @description 获取fm下一首歌曲
+     */
+    _loadFmNextTrack() {
+        return fm().then(res => {
+          this._FmNextTrack = res.data[0];    
+        })
+        .catch(err => {
+            console.err(err);
+        })
+    }
+    /**
+     * @description 播放fm
+     */
+    playFm() {
+        console.log('fm启动!')
+        this._isFm = true;
+        if(this.currentTrack.id !== this._FmTrack.id) {
+            this._replaceCurrentTrack(this._FmTrack.id)
+        } else {
+            if(this._howler?.playing()) {
+                this.pause()
+            } else {
+                this.play()
+            }
+        }
+    }  
+    /**
+     * fm状态下播放下一首歌
+     */
+    _playNextFmTrack() {
+      // 当前歌曲切换下一首歌
+      this._FmTrack = this._FmNextTrack;
+      this._replaceCurrentTrack(this._FmTrack.id)
+      // 提前下载下一首个
+      this._loadFmNextTrack();
+      return true
     }
 
         /**

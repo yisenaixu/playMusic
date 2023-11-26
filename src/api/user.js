@@ -9,7 +9,7 @@ export function userAccount() {
         url: '/user/account',
         methods: 'get',
         params: {
-            timestamp 
+            timestamp:timestamp()
         }
     })
 }

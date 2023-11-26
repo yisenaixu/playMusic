@@ -25,7 +25,8 @@
             </div>
             <div class="middleControl">
                 <button-icon title="上一首">
-                    <svg-icon symbolId="icon-previous" className="svgIcon" @click="playPrevTrack"></svg-icon>
+                    <svg-icon symbolId="icon-previous" className="svgIcon" @click="playPrevTrack" v-show="!isFm"></svg-icon>
+                    <svg-icon class="disable" symbolId="icon-previous" className="svgIcon" v-show="isFm"> </svg-icon>
                 </button-icon>
                 <button-icon @click='playing ? pause() : play()'>
                     <svg-icon v-if="!playing" symbolId="icon-play" className="svgIcon big" ></svg-icon>
@@ -36,7 +37,8 @@
                 </button-icon>
             </div>
             <div class="rightControl">
-                <button-icon @click="player.mode === 'repeat' 
+                <button-icon v-show="!isFm"
+                             @click="player.mode === 'repeat' 
                                     ? player.switchModeOne()
                                     : player.mode === 'one'
                                       ? player.switchModeShuffle()
@@ -97,6 +99,9 @@ export default {
         },
         playing() {
             return this.player.playing
+        },
+        isFm() {
+            return this.player.isFm
         },
         volume:{
             get() {
@@ -170,6 +175,9 @@ export default {
              display: flex;
              justify-content: center;
              align-items: center;
+             .disable {
+                cursor: no-drop;
+              }
              .big {
                 width: 25px;
                 height: 25px;
