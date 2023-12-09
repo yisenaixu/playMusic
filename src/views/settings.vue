@@ -5,12 +5,12 @@
         <div class="left">
           <img
             class="avatar"
-            :src="userData.user.avatarUrl"
+            :src="userData.user?.avatarUrl"
             alt=""
             loading="lazy"
           />
           <div class="info">
-            <div class="name">{{ userData.user.nickname }}</div>
+            <div class="name">{{ userData.user?.nickname }}</div>
             <div class="vip">黑胶vip</div>
           </div>
         </div>
@@ -56,10 +56,15 @@
               音质选择
             </div>
             <div class="right">
-              <select name="" id="">
-                <option value=""></option>
-                <option value=""></option>
-                <option value=""></option>
+              <select v-model="level">
+                <option value="standard">标准</option>
+                <option value="higher">较高</option>
+                <option value="exhigh">极高</option>
+                <option value="lossless">无损</option>
+                <option value="hires">Hi-Res</option>
+                <option value="jyeffect">高清环绕声</option>
+                <option value="sky">沉浸环绕声</option>
+                <option value="jymaster">超清母带</option>
               </select>
             </div>
         </div>
@@ -79,18 +84,38 @@
               </select>
             </div>
         </div>
+        <div class="other">
+          <mybutton :iconButton="true" @click="clearLocal"> 
+            清空本地存储
+          </mybutton>
+        </div>
       </div>
     </div>
   </div>
 </template>
 <script>
-import { mapState } from 'vuex';
+import { mapMutations, mapState } from 'vuex';
 import Mybutton from "../components/Mybutton.vue";
 export default {
   components: { Mybutton },
   name: "settings",
   computed: {
-    ...mapState(['userData'])
+    ...mapState(['userData','settings']),
+    level:{
+      get() {
+        return this.settings.level ?? 'exhigh'
+      },
+      set(value) {
+        if(value === this.settings.level) return;
+        this.updateSettings({key: 'level', value })
+      }
+    }
+  },
+  methods: {
+    ...mapMutations(['updateSettings']),
+    clearLocal() {
+      localStorage.clear()
+    }
   }
 };
 </script>
@@ -141,7 +166,8 @@ export default {
   }
   .global,
   .music-quality,
-  .lyric {
+  .lyric,
+  .other {
     margin-top: 16px;
     .title {
         font-size: 24px;
@@ -164,6 +190,10 @@ export default {
           align-items: center;
         } 
     }
+  }
+  .other {
+    display: flex;
+    justify-content: center;
   }
   select {
             background: var(--color-secondary-bg-for-transparent);

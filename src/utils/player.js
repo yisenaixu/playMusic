@@ -230,7 +230,7 @@ export default class {
      */
     _getAudioSource(track) {
       if(isLoggedIn()) {
-        return songUrl({id:track.id,level:'exhigh'})
+        return songUrl({id:track.id,level:store.state.settings.level})
                  .then(res => {
                     console.log('获取音频url...',res)
                     // 音频资源
