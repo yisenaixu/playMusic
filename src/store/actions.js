@@ -1,6 +1,7 @@
+import { likeAlbum, likeArtist, likeMV, likePlaylist, likeSong } from "../api/like";
 import { getSongListDetail } from "../api/playlist";
 import { dailyTracks, getTrackDetail } from "../api/track";
-import { likedAlbums, likedArtists, userAccount, userLikeSongsIDs, userPlayHistory, userPlaylist } from "../api/user";
+import { likedAlbums, likedArtists, likedMVs, userAccount, userLikeSongsIDs, userPlayHistory, userPlaylist } from "../api/user";
 import { isLoggedIn } from "../utils/auth"
 
 export default {
@@ -49,11 +50,12 @@ export default {
      */
     fetchLikedSongs({state, commit}) {
       if(!isLoggedIn()) return ;
+      console.debug("更新喜欢歌曲ID")
       return userLikeSongsIDs(state.userData.user.userId)
                .then(res => {
                 if(res.ids) {
                   commit('updateLikedXXX',{
-                    name: 'songs',
+                    name: 'songsId',
                     data: res.ids
                   })
                 }
@@ -113,6 +115,7 @@ export default {
      */
     fetchLikedAlbums({state, commit}) {
       if(!isLoggedIn()) return ;
+      console.debug("更新喜欢专辑")
       return likedAlbums({limit: 2000})
                .then(res => {
                 if(res.data) {
@@ -139,6 +142,22 @@ export default {
                })
     },
     /**
+     * 获取喜欢的mv
+     */
+    fetchLikedMVs({state, commit}) {
+      if(!isLoggedIn()) return ;
+      return likedMVs()
+               .then(res => {
+                console.debug(res)
+                if(res.data) {
+                  commit('updateLikedXXX',{
+                    name: 'mvs',
+                    data: res.data
+                  })
+                }
+               })
+    },
+    /**
      * 获取日推歌曲
      */           
     fetchDailyTracks({ commit }) {
@@ -150,5 +169,83 @@ export default {
                   commit('updateDailyTracks',res.data.dailySongs)
                 }
                })
-    }                                            
+    }, 
+    
+    /**
+     * 喜欢一首歌曲
+     * @param {object} payload
+     * @param {number} payload.id
+     * @param {number} payload.t
+     */
+    LikeATrack({ dispatch }, payload) {
+      if(!isLoggedIn()) return ;
+      likeSong(payload)
+       .then(res => {
+          console.log(res)
+          dispatch('fetchLikedSongs')  
+          dispatch('fetchLikedSongsDetail')  
+        })
+    },
+
+     /**
+     * 喜欢一个专辑
+     * @param {object} payload
+     * @param {number} payload.id
+     * @param {number} payload.t
+     */
+     LikeAAlbum({ dispatch }, payload) {
+       if(!isLoggedIn()) return ;
+       console.debug(payload)
+       likeAlbum(payload)
+        .then(res => {
+           console.log(res)
+           dispatch('fetchLikedAlbums') 
+         })
+     },
+
+    /**
+     * 喜欢一个歌单
+     * @param {object} payload
+     * @param {number} payload.id
+     * @param {number} payload.t
+     */
+     LikeAPlaylist({ dispatch }, payload) {
+       if(!isLoggedIn()) return ;
+       likePlaylist(payload)
+        .then(res => {
+           console.log(res)
+           dispatch('fetchLikedPlaylist')  
+         })
+     },
+     
+    /**
+     * 喜欢一个歌手
+     * @param {object} payload
+     * @param {number} payload.id
+     * @param {number} payload.t
+     */
+    LikeAArtist({ dispatch }, payload) {
+      if(!isLoggedIn()) return ;
+      likeArtist(payload)
+       .then(res => {
+          console.log(res)
+          dispatch('fetchLikedArtists')  
+        })
+    },
+
+    /**
+     * 喜欢一个MV
+     * @param {object} payload
+     * @param {number} payload.id
+     * @param {number} payload.t
+     */
+        LikeAMV({ dispatch }, payload) {
+          if(!isLoggedIn()) return ;
+          likeMV(payload)
+           .then(res => {
+              console.log(res)
+              dispatch('fetchLikedMVs')  
+            })
+        },
+
 }

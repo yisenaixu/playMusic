@@ -17,8 +17,11 @@
           <Mybutton 
           @click="$store.state.player.replacePlaylist(songsId)"
           symbolId="icon-play"> 播放 </Mybutton>
-          <Mybutton> 关注 </Mybutton>
-
+          <Mybutton 
+          @click="() => LikeAArtist({ id:artist.id, t:isLiked ? 2 : 1 })"
+          > 
+            {{ isLiked ? '取消关注' : '关注' }}
+          </Mybutton>
           <Mybutton :iconButton="true">... </Mybutton>
         </div>
       </div>
@@ -66,6 +69,7 @@ import {
   fetchArtistHotSong,
   fetchArtistMv,
 } from "../api/artist";
+import { mapActions, mapState } from 'vuex';
 export default {
   name: "artist",
   components: { Cover, TrackList, CoverRow, Mybutton, MvRow },
@@ -81,9 +85,19 @@ export default {
     };
   },
   computed: {
+    ...mapState(['liked']),
     limitSongs() {
       return this.songs.slice(0, this.songsLimit);
     },
+    likedArtistIds() {
+            return this.liked.artists.map(artist => artist.id)
+    },
+    isLiked() {
+            return this.likedArtistIds.includes(this.artist.id)
+    }
+  },
+  methods: {
+    ...mapActions(['LikeAArtist'])
   },
   created() {
     fetchArtistDetail(this.$route.params.id).then((res) => {

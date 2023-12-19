@@ -14,10 +14,10 @@
                   symbolId="icon-play"
                   @click="$store.state.player.replacePlaylist(songsId)"
                 >播放</Mybutton>
-
                 <Mybutton
                 :iconButton="true"
-                symbolId="icon-heart"
+                :symbolId="isLiked ? 'icon-heart-solid' : 'icon-heart'"
+                @click="() => LikeAAlbum({ id:album.id, t:isLiked ? 2 : 1 })"
                 >
                 </Mybutton>
                 
@@ -52,6 +52,7 @@ import {transformDate} from '../utils/common'
 import { fetchAlbumDetail } from '../api/album';
 import { fetchArtistAlbums} from '../api/artist'
 import { nextTick } from 'vue';
+import { mapActions, mapState } from 'vuex';
 export default {
     name: 'playlist',
     data() {
@@ -64,6 +65,7 @@ export default {
         };
     },
     computed: {
+        ...mapState(['liked']),
         playlistCount() {
             return this.playlist.trackCount;
         },
@@ -75,7 +77,13 @@ export default {
         },
         haveMore() {
             return this.playlistCount > this.trackCount
-        } 
+        },
+        likedAlbumIds() {
+            return this.liked.albums.map(album => album.id)
+        },
+        isLiked() {
+            return this.likedAlbumIds.includes(this.album.id)
+        }
     },
     mounted() {
        this.loadData(this.$route.params.id);
@@ -85,6 +93,7 @@ export default {
        return true;
     },
     methods: {
+        ...mapActions(['LikeAAlbum']),
         async loadData(id) {
             await fetchAlbumDetail(id).then(res => {
             this.album = res.album;
@@ -95,8 +104,7 @@ export default {
             fetchArtistAlbums(this.album?.artist?.id, 5).then(res => {
                 this.moreAlbums = res.hotAlbums
             })
-        }
-        
+        }        
     },
     components: { Cover, TrackList, CoverRow, Mybutton}
 }

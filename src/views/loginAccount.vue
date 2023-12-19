@@ -168,6 +168,7 @@ export default {
         return ;
       }
       if(res.code === 200) {
+        console.debug(res)
         setCookies(res.cookie);
         this.$store.dispatch("fetchUserProfile")
           .then(() => {

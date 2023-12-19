@@ -7,7 +7,11 @@
       <div class="video-info">
         <div class="title">{{ mv.artistName }}-{{ mv.name }}
           <div class="button">
-            <Mybutton :iconButton="true" symbolId="icon-heart"></Mybutton>
+            <Mybutton 
+              :iconButton="true" 
+              :symbolId="isLiked ? 'icon-heart-solid' : 'icon-heart'"
+              @click="() => LikeAMV({ mvid:mv.id, t:isLiked ? 2 : 1 })"
+            ></Mybutton>
             <Mybutton>...</Mybutton>
           </div>
         </div>
@@ -24,7 +28,7 @@
 import { fetchMvDetail, fetchMvUrl, simiMv } from '../api/mv';
 import Mybutton from '../components/Mybutton.vue';
 import MvRow from '../components/MvRow.vue';
-import { mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import Plyr from 'plyr';
 import '../assets/css/plyr.css'
 export default {
@@ -55,12 +59,19 @@ export default {
       this.loadData();
     },
     computed: {
-      ...mapState(['player']),
+      ...mapState(['player','liked']),
       id() {
         return this.$route.params.id
+      },
+      likedMVIds() {
+        return this.liked.mvs.map(mv => mv.vid)
+      },
+      isLiked() {
+        return this.likedMVIds.includes(String(this.mv.id))
       }
     },
     methods:{
+      ...mapActions(['LikeAMV']),
       loadData(){
         fetchMvDetail(this.id)
           .then(res => {

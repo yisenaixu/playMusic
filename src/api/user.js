@@ -38,6 +38,7 @@ export function userLikeSongsIDs(uid) {
         method: 'get',
         params: {
             uid,
+            timestamp: timestamp()  
         }
     })
 }
@@ -84,5 +85,16 @@ export function likedArtists(params) {
       url: '/artist/sublist',
       method: 'get',
       params,
+    });
+  }
+
+  /**
+ * @description 获取收藏的MV（需要登录）
+ * @returns 
+ */
+export function likedMVs() {
+    return request({
+      url: '/mv/sublist',
+      method: 'get',
     });
   }

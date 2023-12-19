@@ -36,14 +36,14 @@
       <div v-show="isShowTime" class="time">
         <SvgIcon v-show="isHover" @click="() => player.addTrackToList(this.track.id, true)" symbolId="icon-play" className="svgIcon mr"/>
         <SvgIcon v-show="isHover" @click="() => player.addTrackToList(this.track.id, false)" symbolId="icon-plus" className="svgIcon mr"/>
-        <SvgIcon v-show="isHover" symbolId="icon-heart" className="svgIcon mr"/>
+        <SvgIcon v-show="isHover" :symbolId="isLiked ? 'icon-heart-solid' : 'icon-heart'" className="svgIcon mr" @click="() => LikeATrack({id: track.id,t:isLiked ? 2 : 1 })"/>
         {{ dt }}
       </div>
     </div>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import {transformTime} from '../utils/common'
 import SvgIcon from './SvgIcon.vue';
   export default {
@@ -74,7 +74,7 @@ import SvgIcon from './SvgIcon.vue';
       }
     },
     computed: {
-        ...mapState(['player']),
+        ...mapState(['player','liked']),
         al() {
             return this?.track?.al;
         },
@@ -87,8 +87,14 @@ import SvgIcon from './SvgIcon.vue';
         },
         highLight() {
           return this.player.playing && this.player.currentTrack.id === this.track.id && this.highLightPlayingTrack
+        },
+        isLiked() {
+          return this.liked.songsId.includes(this.track.id)
         }
     },
+    methods: {
+      ...mapActions(['LikeATrack'])
+    }
   }
 </script>
 

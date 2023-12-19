@@ -17,7 +17,8 @@
 
                 <Mybutton
                 :iconButton="true"
-                symbolId="icon-heart"
+                :symbolId="isLiked ? 'icon-heart-solid' : 'icon-heart'"
+                @click="() => LikeAPlaylist({ id:playlist.id, t:isLiked ? 2 : 1 })"
                 >
                 </Mybutton>
                 
@@ -43,6 +44,7 @@ import Cover from '../components/Cover.vue';
 import { getPartTrack } from '../utils/songlist';
 import {transformDate} from '../utils/common'
 import Mybutton from '../components/Mybutton.vue';
+import { mapActions, mapState } from 'vuex';
 export default {
     name: 'playlist',
     data() {
@@ -52,7 +54,8 @@ export default {
             songs: {}
         };
     },
-    computed: {
+    computed:{
+        ...mapState(['liked']),
         playlistCount() {
             return this.playlist.trackCount;
         },
@@ -64,7 +67,14 @@ export default {
         },
         haveMore() {
             return this.playlistCount > this.trackCount
-        } 
+        },
+        likedPlaylistIds() {
+            return this.liked.playlists.map(playlist => playlist.id)
+        },
+        isLiked() {
+            return this.likedPlaylistIds.includes(this.playlist.id)
+        }
+
     },
     mounted() {
         getSongListDetail(this.$route.params.id).then(res => {
@@ -82,6 +92,7 @@ export default {
         })
     },
     methods: {
+        ...mapActions(['LikeAPlaylist']),
         loadmore() {
             getPartTrack(this.$route.params.id, this.offset).then(res => {
             console.log(res);

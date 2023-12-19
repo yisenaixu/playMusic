@@ -17,7 +17,7 @@ export function setCookies(string) {
 export function getCookie(key) {
     return Cookies.get(key) || localStorage.getItem(`cookie-${key}`) || undefined
 }
-
+ 
 export function removeCookie(key) {
     return Cookies.remove(key) || localStorage.removeItem(`cookie-${key}`)
 }

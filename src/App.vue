@@ -1,40 +1,28 @@
 <script setup>
+import { onMounted } from 'vue';
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
 import NavBar from './components/NavBar.vue';
 import Player from './components/Player.vue';
+import store from './store';
+onMounted(() => {
+  store.dispatch('fetchLikedSongs')
+  store.dispatch('fetchLikedAlbums')
+  store.dispatch('fetchLikedArtists')
+  store.dispatch('fetchLikedPlaylist')
+  store.dispatch('fetchLikedMVs')
+  console.debug('获取喜欢的内容')
+})
 </script>
 
 <template>
-    <!-- <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-                           
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" /> -->
       <NavBar></NavBar>
-      <router-view v-if="$route.meta.keepAlive" v-slot="{ Component }">
+      <router-view v-if="$route.meta.keepAlive" :key="$route.fullPath" v-slot="{ Component }">
         <keep-alive>
           <component :is="Component" />
         </keep-alive>
       </router-view>
-      <router-view v-if="!$route.meta.keepAlive"></router-view>
+      <router-view v-if="!$route.meta.keepAlive" :key="$route.fullPath"></router-view>
       <Player></Player>
-      <!-- <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-        <RouterLink to="/search?q=123">Search</RouterLink>
-        <RouterLink to="/user/123">user</RouterLink>
-        <RouterLink to="/todolist">todoList</RouterLink>
-      </nav>
-
-    </div>
-  </header>
-  
-  <router-view v-slot = '{ Component}'>
-    <transition name="fade">
-      <component :is="Component" />
-    </transition>
-  </router-view> -->
 </template>
 
 <style scoped>
