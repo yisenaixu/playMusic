@@ -53,8 +53,8 @@ node环境即可,本地v18.16.0,选择与本地相近版本即可
 - Vue-router
 - Vuex
 
-[api接口]: https://github.com/Binaryify/NeteaseCloudMusicApi
-[项目参考]: https://github.com/qier222/YesPlayMusic
+[api接口 NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi)
+[项目参考 YesPlayMusic](https://github.com/qier222/YesPlayMusic)
 
 ## 项目初始化
 
