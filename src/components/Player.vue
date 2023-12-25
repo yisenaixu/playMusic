@@ -68,7 +68,7 @@
                 <button-icon  @click="navigateList">
                     <svg-icon symbolId="icon-list" className="svgIcon"></svg-icon>
                 </button-icon>
-                <button-icon>
+                <button-icon @click="() => $router.push({name: 'lyric'})">
                     <svg-icon symbolId="icon-arrow-up" className="svgIcon"></svg-icon>
                 </button-icon>
             </div>

@@ -67,6 +67,11 @@ const router = createRouter({
       props: route => ({query: route.query.q})
     },
     {
+      path: '/lyric',
+      name: 'lyric',
+      component: () => import('../views/lyric.vue'),
+    },
+    {
       path: '/dailyTracks',
       name: 'dailyTracks',
       component: () => import('../views/dailyTracks.vue')

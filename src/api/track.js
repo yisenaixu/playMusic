@@ -52,3 +52,18 @@ export function songUrl(params) {
         params, 
     })
 }
+
+/**
+ * 获取歌词
+ * @description 调用此接口 , 传入音乐 id 可获得对应音乐的歌词 ( 不需要登录 )
+ * @param {number} id - 音乐 id
+ */
+export function getLyrics(id) {
+  return request({
+    url: '/lyric',
+    method: 'get',
+    params: {
+        id,
+    }
+  })
+}

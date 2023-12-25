@@ -132,7 +132,7 @@ export default class {
         
         // 读缓存中歌曲新建立播放器
         this._replaceCurrentTrack(this.currentTrack?.id)
-          .then(() => this._howler.pause())
+        this.pause()
 
         // 初始化fm
         if(Object.keys(this._FmTrack).length === 0) {
@@ -395,9 +395,9 @@ export default class {
         console.log('播放')
         if(this._howler.playing()) return ;
         this._howler?.play();
-
+        console.log(this._howler)
         this._howler?.once('play', () => {
-            console.log('播放')
+            console.log('播放1')
             this._howler?.fade(0, this.volume, 200);
             this.playing = true
         })
@@ -414,6 +414,15 @@ export default class {
             console.log('播放停止')
             this.playing = false
         })
+    }
+    /**
+     * @description 切换进度
+     */
+    seek(time) {
+      if(time !== null) {
+        this._howler?.seek(time)
+      }
+      return this._howler === null ? 0: this._howler.seek()
     }
     /**
      * @description 切换播放模式 到单曲循环
