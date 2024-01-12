@@ -63,8 +63,9 @@ const router = createRouter({
     },
     {
       path: '/search',
-      component: () => import('../views/Search.vue'),
-      props: route => ({query: route.query.q})
+      name: 'search',
+      component: () => import('../views/search.vue'),
+      props: route => ({query: route.query.keywords})
     },
     {
       path: '/lyric',

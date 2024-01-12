@@ -20,9 +20,11 @@
           <div class="search">
             <input 
                type="text" 
+               v-model="input"
                :placeholder="inputFocus ? '' : '搜索'"
                @blur="inputFocus = false"
                @focus="inputFocus = true" 
+               @keydown.enter="search"
             />
           </div>
         </div>
@@ -52,12 +54,14 @@ import ButtonIcon from './ButtonIcon.vue';
 import ContentMenu from './ContentMenu.vue';
 import { isLoggedIn, doLogout} from '../utils/auth';
 import { mapState } from 'vuex';
+import { search } from '../api/other';
   export default {
     name: 'NavBar',
     components: {SvgIcon, ButtonIcon,ContentMenu},
     data() {
       return {
-             inputFocus: false
+             inputFocus: false,
+             input: '',
         }
     },
     computed: {
@@ -76,6 +80,9 @@ import { mapState } from 'vuex';
       },
       showModal(e) {
          this.$refs.userProfileModal.openMenu(e)
+      },
+      search() {
+        this.$router.push({name: 'search', query: {keywords: this.input}})
       },
       doLogout() {
         doLogout()

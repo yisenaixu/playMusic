@@ -1,6 +1,6 @@
 <template>
     <div class="cover-row">
-        <div class="container">
+        <div class="container" :style="coverStyle">
             <Cover v-for="item in items" :key="item.id" :info="item" :type="type" showTitle="true" />
         </div> 
     </div>
@@ -11,17 +11,35 @@ import Cover from './Cover.vue';
 export default {
   name: 'coverRow',
   components: {Cover},
-  props: ['items','type'] //type: 'playlist' | 'album' | 'artist'
+  data() {
+    return {
+      coverStyle: {},
+    }
+  },
+  props: {
+    items: {
+        type: Array,
+    },
+    //type: 'playlist' | 'album' | 'artist'
+    type: {
+        type: Object
+    },
+    columnNumber: {
+        type: Number,
+        default: 5
+    },
+  },   
+  created() {
+    this.coverStyle = {
+        display: 'grid',
+        gridTemplateColumns: `repeat(${this.columnNumber}, 1fr)`,
+    }
+  }
 }
 </script>
   
 <style scoped>
-.cover-row {
-
-}
 .container {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
     gap: 24px;
     justify-items: center;
 }
